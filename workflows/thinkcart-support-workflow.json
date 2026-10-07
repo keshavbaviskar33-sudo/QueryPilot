@@ -1,0 +1,212 @@
+[
+  {
+    "id": "triage_message",
+    "type": "agent",
+    "title": "Triage Customer Message (Tarun)",
+    "agent_type": "thinkcart_ticket_triage",
+    "agent_id": "0664e4d9-0142-40ff-ae31-ea96ac2d4b2e",
+    "action": "triage_message",
+    "inputs": {
+      "message": "{{trigger.message}}"
+    },
+    "on_failure": "human_review",
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "intent": {
+          "type": "string"
+        },
+        "order_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "customer_email": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sentiment": {
+          "type": "string"
+        },
+        "urgency": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "needs_human": {
+          "type": "boolean"
+        },
+        "route_to": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "route_to",
+        "summary",
+        "needs_human"
+      ]
+    }
+  },
+  {
+    "id": "check_needs_human",
+    "type": "condition",
+    "title": "Needs a human? (or triage gave no route)",
+    "condition": "triage_message.output.needs_human == true OR triage_message.output.route_to == null OR triage_message.output.route_to == 'human'",
+    "true_path": "human_review",
+    "false_path": "check_support",
+    "depends_on": [
+      "triage_message"
+    ]
+  },
+  {
+    "id": "check_support",
+    "type": "condition",
+    "title": "Route: Support (Ria) or Order Ops (Omkar)?",
+    "condition": "triage_message.output.route_to == 'support_agent'",
+    "true_path": "support_agent_action",
+    "false_path": "order_ops_action",
+    "depends_on": [
+      "check_needs_human"
+    ]
+  },
+  {
+    "id": "support_agent_action",
+    "type": "agent",
+    "title": "Answer policy/product question (Ria)",
+    "agent_type": "ecommerce_seller",
+    "agent_id": "e105e406-ae5a-4bec-a9d1-3becf2fd5176",
+    "action": "respond_to_message",
+    "inputs": {
+      "message": "{{trigger.message}}"
+    },
+    "on_failure": "human_review",
+    "depends_on": [
+      "check_support"
+    ]
+  },
+  {
+    "id": "finish_support",
+    "type": "transform",
+    "title": "Final reply (Support)",
+    "inputs": {
+      "final_reply": "{{support_agent_action.output}}",
+      "triage_summary": "{{triage_message.output.summary}}",
+      "handled_by": "Ria (support_agent)"
+    },
+    "depends_on": [
+      "support_agent_action"
+    ]
+  },
+  {
+    "id": "order_ops_action",
+    "type": "agent",
+    "title": "Handle order request (Omkar)",
+    "agent_type": "thinkcart_order_ops",
+    "agent_id": "3c67b54a-163d-4ad4-867a-c2553ce018c4",
+    "action": "process_order_ops",
+    "inputs": {
+      "task": "Today: {{trigger.today}} | Customer message: {{trigger.message}}"
+    },
+    "on_failure": "human_review",
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "reply_to_customer": {
+          "type": "string"
+        },
+        "order_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "decision": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number"
+        },
+        "needs_approval": {
+          "type": "boolean"
+        },
+        "needs_human": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "reply_to_customer",
+        "decision",
+        "amount",
+        "needs_approval",
+        "needs_human"
+      ]
+    },
+    "depends_on": [
+      "check_support"
+    ]
+  },
+  {
+    "id": "approval_check",
+    "type": "condition",
+    "title": "Refund needs supervisor approval?",
+    "condition": "order_ops_action.output.needs_approval == true OR order_ops_action.output.amount > 2000",
+    "true_path": "order_ops_approval",
+    "false_path": "human_review_check",
+    "depends_on": [
+      "order_ops_action"
+    ]
+  },
+  {
+    "id": "order_ops_approval",
+    "type": "human_in_loop",
+    "title": "Order Ops Supervisor: approve refund",
+    "assignee_role": "order_ops_supervisor",
+    "timeout_hours": 24,
+    "depends_on": [
+      "approval_check"
+    ]
+  },
+  {
+    "id": "human_review_check",
+    "type": "condition",
+    "title": "Order Ops flagged for human?",
+    "condition": "order_ops_action.output.needs_human == true",
+    "true_path": "human_review",
+    "false_path": "finish_order_ops",
+    "depends_on": [
+      "approval_check"
+    ]
+  },
+  {
+    "id": "finish_order_ops",
+    "type": "transform",
+    "title": "Final reply (Order Ops)",
+    "inputs": {
+      "final_reply": "{{order_ops_action.output.reply_to_customer}}",
+      "decision": "{{order_ops_action.output.decision}}",
+      "amount": "{{order_ops_action.output.amount}}",
+      "triage_summary": "{{triage_message.output.summary}}",
+      "handled_by": "Omkar (order_ops_agent)"
+    },
+    "depends_on": [
+      "human_review_check"
+    ]
+  },
+  {
+    "id": "human_review",
+    "type": "human_in_loop",
+    "title": "Support Executive review (angry / legal / failed step / flagged)",
+    "assignee_role": "support_executive",
+    "timeout_hours": 4,
+    "depends_on": [
+      "check_needs_human"
+    ]
+  }
+]

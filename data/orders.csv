@@ -1,0 +1,16 @@
+order_id,customer_name,customer_email,product,sku,category,amount_inr,payment_method,order_date,status,delivered_date,courier,tracking_id
+TC10231,Aarav Mehta,aarav.mehta@example.com,SoundPod Wireless Earbuds,EL-102,Electronics,2499,UPI,2026-09-28,Delivered,2026-10-02,BlueDart,BD88412301
+TC10232,Priya Nair,priya.nair@example.com,BoltX 20W USB-C Fast Charger,EL-101,Electronics,799,Card,2026-09-20,Delivered,2026-09-24,Delhivery,DL55120987
+TC10233,Rohan Gupta,rohan.gupta@example.com,ViewMax 24in Full HD Monitor,EL-104,Electronics,9999,Card,2026-10-03,Shipped,,BlueDart,BD88419922
+TC10234,Sneha Iyer,sneha.iyer@example.com,Urban Basics Crew T-Shirt,AP-301,Apparel,499,COD,2026-10-01,Delivered,2026-10-04,Ekart,EK30044511
+TC10235,Vikram Singh,vikram.singh@example.com,ComfortFit Innerwear Pack (3),AP-303,Apparel,599,UPI,2026-09-30,Delivered,2026-10-03,Delhivery,DL55128840
+TC10236,Ananya Das,ananya.das@example.com,CookEase Non-stick Pan Set,HM-202,Home,2199,Net Banking,2026-10-05,Packed,,Delhivery,
+TC10237,Karan Patel,karan.patel@example.com,PowerCube 10000mAh Power Bank,EL-103,Electronics,1299,UPI,2026-09-22,Delayed,,Ekart,EK30039876
+TC10238,Meera Joshi,meera.joshi@example.com,ThinkCart Gift Card,GC-401,Gift Card,2000,Card,2026-10-02,Delivered,2026-10-02,Email,
+TC10239,Arjun Reddy,arjun.reddy@example.com,Urban Basics Denim Jacket,AP-302,Apparel,2799,COD,2026-10-02,Out for delivery,,BlueDart,BD88420155
+TC10240,Fatima Khan,fatima.khan@example.com,AromaPure Ceramic Diffuser,HM-201,Home,1149,UPI,2026-10-06,Placed,,,
+TC10241,Ishaan Verma,ishaan.verma@example.com,DreamSoft Cotton Bedsheet (Queen),HM-203,Home,899,Card,2026-09-18,Delivered,2026-09-22,Delhivery,DL55117765
+TC10242,Diya Sharma,diya.sharma@example.com,GlowUp Face Serum 30ml,PC-501,Personal Care,649,UPI,2026-10-01,Delivered,2026-10-05,Ekart,EK30045002
+TC10243,Kabir Malhotra,kabir.malhotra@example.com,ViewMax 24in Full HD Monitor,EL-104,Electronics,9999,UPI,2026-09-29,Delivered,2026-10-06,BlueDart,BD88417730
+TC10244,Riya Kapoor,riya.kapoor@example.com,BoltX 20W USB-C Fast Charger,EL-101,Electronics,799,COD,2026-10-04,Cancelled,,,
+TC10245,Neha Bansal,neha.bansal@example.com,SoundPod Wireless Earbuds,EL-102,Electronics,2499,Card,2026-10-03,Delivered,2026-10-06,Delhivery,DL55131209
